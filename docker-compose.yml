@@ -1,0 +1,51 @@
+version: '2.1'
+services:
+  invoice-php:
+    build: ./docker/php
+    container_name: invoice-php
+    volumes:
+      - ./invoices:/data/www
+    networks:
+      - invoice-network
+    working_dir: /data/www
+  php-xdebug:
+    container_name: invoice-php-xdebug
+    build: ./docker/php
+    volumes:
+      - ./invoices:/data/www
+      - ./docker/php/xdexdebugbug.ini:/usr/local/etc/php/conf.d/xdebug.ini:cached
+    networks:
+      - invoice-network
+    working_dir: /data/www
+  amqp-management:
+    container_name: invoice-amqp-management
+    image: rabbitmq:3-management
+    ports:
+      - 15675:15672
+    networks:
+      - invoice-network
+  invoice-mysql:
+    container_name: invoice-mysql
+    image: mysql:5.7.33
+    environment:
+      - MYSQL_DATABASE=invoices_db
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+      - MYSQL_USER=no_root
+      - MYSQL_PASSWORD=123qweASD
+    ports:
+      - 3308:3306
+    networks:
+      - invoice-network
+  invoice-amqp:
+    container_name: invoice-amqp
+    image: rabbitmq:alpine
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=invoices_host
+    networks:
+      - invoice-network
+networks:
+  invoice-network:
+    ipam:
+      config:
+        - subnet: 172.90.0.0/16
+          ip_range: 172.99.5.0/24
