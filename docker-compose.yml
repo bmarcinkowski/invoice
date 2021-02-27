@@ -1,31 +1,24 @@
 version: '2.1'
 services:
-  invoice-php:
+  invoice_php:
     build: ./docker/php
-    container_name: invoice-php
+    container_name: invoice_php
     volumes:
       - ./invoices:/data/www
     networks:
-      - invoice-network
+      - invoice_network
     working_dir: /data/www
-  php-xdebug:
-    container_name: invoice-php-xdebug
+  invoice_php_xdebug:
+    container_name: invoice_php_xdebug
     build: ./docker/php
     volumes:
       - ./invoices:/data/www
       - ./docker/php/xdexdebugbug.ini:/usr/local/etc/php/conf.d/xdebug.ini:cached
     networks:
-      - invoice-network
+      - invoice_network
     working_dir: /data/www
-  amqp-management:
-    container_name: invoice-amqp-management
-    image: rabbitmq:3-management
-    ports:
-      - 15675:15672
-    networks:
-      - invoice-network
-  invoice-mysql:
-    container_name: invoice-mysql
+  invoice_mysql:
+    container_name: invoice_mysql
     image: mysql:5.7.33
     environment:
       - MYSQL_DATABASE=invoices_db
@@ -35,16 +28,25 @@ services:
     ports:
       - 3308:3306
     networks:
-      - invoice-network
-  invoice-amqp:
-    container_name: invoice-amqp
+      - invoice_network
+  invoice_amqp:
+    container_name: invoice_amqp
     image: rabbitmq:alpine
+    ports:
+      - 5673:5672
     environment:
       - RABBITMQ_DEFAULT_VHOST=invoices_host
     networks:
-      - invoice-network
+      - invoice_network
+  amqp_management:
+    container_name: invoice_amqp_management
+    image: rabbitmq:3-management
+    ports:
+      - 15675:15672
+    networks:
+      - invoice_network
 networks:
-  invoice-network:
+  invoice_network:
     ipam:
       config:
         - subnet: 172.90.0.0/16
