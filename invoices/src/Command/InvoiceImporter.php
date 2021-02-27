@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Message\InvoiceGeneratorMessage;
-use App\Service\Invoice\InvoiceDTO;
+use League\Flysystem\Filesystem;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ class InvoiceImporter extends Command
 {
     protected static $defaultName = 'invoice:importer';
 
-    private const ORIGIN_FILENAME = './databucket/invoices.csv';
+    private const ORIGIN_FILENAME = '/summary/%s_%s.csv';
     private const CSV_HEADER = [
         "order_number",
         "invoice_date",
@@ -31,17 +31,17 @@ class InvoiceImporter extends Command
     private MessageBusInterface $messageBus;
     private LoggerInterface $logger;
     private CsvEncoder $csvEncoder;
+    /**
+     * @var Filesystem
+     */
+    private Filesystem $publicUploadsFilesystem;
 
-    public function __construct(MessageBusInterface $messageBus, LoggerInterface $logger)
+    public function __construct(MessageBusInterface $messageBus, Filesystem $publicUploadsFilesystem, LoggerInterface $logger)
     {
         parent::__construct();
         $this->messageBus = $messageBus;
         $this->logger = $logger;
-    }
-
-    protected function configure()
-    {
-        // ...
+        $this->publicUploadsFilesystem = $publicUploadsFilesystem;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -53,7 +53,7 @@ class InvoiceImporter extends Command
             $this->logger->critical($exception);
             return Command::FAILURE;
         }
-
+dd(memory_get_peak_usage()/1024/1024);
         return Command::SUCCESS;
     }
 
@@ -65,14 +65,13 @@ class InvoiceImporter extends Command
     private function getInvoicesFromFile(): array
     {
         $invoices = [];
-        if (($handle = fopen(self::ORIGIN_FILENAME, 'r')) !== false) {
-            while (($data = fgetcsv($handle, 0, ';')) !== false) {
-                if (self::CSV_HEADER === $data) {
-                    continue;
-                }
-                $invoices[] = array_combine(self::CSV_HEADER, $data);
+        $filename = $this->generateFilename();
+        $file = $this->publicUploadsFilesystem->readStream($filename);
+        while (($data = fgetcsv($file, 0, ';')) !== false) {
+            if (self::CSV_HEADER === $data) {
+                continue;
             }
-            fclose($handle);
+            $invoices[] = array_combine(self::CSV_HEADER, $data);
         }
 
         return $invoices;
@@ -85,19 +84,17 @@ class InvoiceImporter extends Command
     protected function exportInvoices(array $invoices): void
     {
         foreach ($invoices as $invoice) {
-            $invoiceDTO = new InvoiceDTO(
-                $invoice['order_number'],
-                new \DateTimeImmutable($invoice['invoice_date']),
-                $invoice['receiver_name'],
-                $invoice['receiver_address'],
-                $invoice['receiver_email'],
-                $invoice['receiver_tax_id'],
-                $invoice['service_name'],
-                $invoice['service_cost'],
-                $invoice['tax_rate'],
-            );
+            $invoiceDTO = InvoiceTransformer::generateDTO($invoice);
+
             $message = new InvoiceGeneratorMessage($invoiceDTO);
             $this->messageBus->dispatch($message);
         }
+    }
+
+    private function generateFilename(): string
+    {
+        $date = (new \DateTime())->modify('- 1 month');
+
+        return sprintf(self::ORIGIN_FILENAME, $date->format('Y'), $date->format('m'));
     }
 }

@@ -6,6 +6,6 @@ class InvoiceCalculator
 {
     public static function getVatValue(float $invoiceValue, int $taxRate): float
     {
-        return 0.00
+        return 0.00;
     }
 }
