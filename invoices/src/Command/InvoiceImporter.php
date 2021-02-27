@@ -30,7 +30,6 @@ class InvoiceImporter extends Command
 
     private MessageBusInterface $messageBus;
     private LoggerInterface $logger;
-    private CsvEncoder $csvEncoder;
     /**
      * @var Filesystem
      */
@@ -38,6 +37,7 @@ class InvoiceImporter extends Command
 
     public function __construct(MessageBusInterface $messageBus, Filesystem $publicUploadsFilesystem, LoggerInterface $logger)
     {
+        ini_set('memory_limit', '128M');
         parent::__construct();
         $this->messageBus = $messageBus;
         $this->logger = $logger;
@@ -53,7 +53,6 @@ class InvoiceImporter extends Command
             $this->logger->critical($exception);
             return Command::FAILURE;
         }
-dd(memory_get_peak_usage()/1024/1024);
         return Command::SUCCESS;
     }
 

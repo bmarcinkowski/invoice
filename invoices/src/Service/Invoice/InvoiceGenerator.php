@@ -29,7 +29,7 @@ class InvoiceGenerator
         return sprintf(
             'SH%s-%s',
             $invoiceDate->format('ymd'),
-            str_pad((string)$orderNumber, 5, '0', STR_PAD_LEFT)
+            str_pad((string)$orderNumber, 6, '0', STR_PAD_LEFT)
         );
     }
 
