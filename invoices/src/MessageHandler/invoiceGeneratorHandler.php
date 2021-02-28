@@ -22,10 +22,10 @@ class InvoiceGeneratorHandler implements MessageHandlerInterface
     public function __invoke(InvoiceGeneratorMessage $invoiceMessage)
     {
         $invoice = $invoiceMessage->getInvoiceDTO();
-        $fileUrl = $this->invoiceGenerator->generate($invoice);
+        $this->invoiceGenerator->generate($invoice);
 
         $this->messageBus->dispatch(
-            new InvoiceSenderMessage($fileUrl, $invoice->getReceiverEmail(), $invoice->getIssueDate(), $invoice->getInvoiceNumber())
+            new InvoiceSenderMessage($this->invoiceGenerator->getFileUrl(), $invoice->getReceiverEmail(), $invoice->getIssueDate(), $invoice->getInvoiceNumber())
         );
     }
 }

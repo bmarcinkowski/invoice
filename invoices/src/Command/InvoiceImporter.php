@@ -15,7 +15,7 @@ class InvoiceImporter extends Command
 {
     protected static $defaultName = 'invoice:importer';
 
-    private const ORIGIN_FILENAME = '/summary/%s_%s.csv';
+    private const ORIGIN_FILENAME_PATTERN = '%s_%s.csv';
     private const CSV_HEADER = [
         "order_number",
         "invoice_date",
@@ -94,6 +94,6 @@ class InvoiceImporter extends Command
     {
         $date = (new \DateTime())->modify('- 1 month');
 
-        return sprintf(self::ORIGIN_FILENAME, $date->format('Y'), $date->format('m'));
+        return sprintf(self::ORIGIN_FILENAME_PATTERN, $date->format('Y'), $date->format('m'));
     }
 }
