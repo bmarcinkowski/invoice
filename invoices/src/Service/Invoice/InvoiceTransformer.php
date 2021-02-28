@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Command;
-
-use App\Service\Invoice\InvoiceDTO;
+namespace App\Service\Invoice;
 
 class InvoiceTransformer
 {

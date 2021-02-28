@@ -3,13 +3,13 @@
 namespace App\Command;
 
 use App\Message\InvoiceGeneratorMessage;
+use App\Service\Invoice\InvoiceTransformer;
 use League\Flysystem\Filesystem;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Serializer\Encoder\CsvEncoder;
 
 class InvoiceImporter extends Command
 {
