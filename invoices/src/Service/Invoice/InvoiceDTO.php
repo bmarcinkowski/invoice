@@ -97,9 +97,9 @@ class InvoiceDTO implements \JsonSerializable
                 (object)[
                     'order' => $this->orderNumber,
                     'name' => $this->serviceName,
-                    'value' => $this->serviceCost,
-                    'tax_rate' => $this->taxRate,
-                    'tax_value' => $this->taxValue,
+                    'value' => round($this->serviceCost, 2),
+                    'tax_rate' => round($this->taxRate, 2),
+                    'tax_value' => round($this->taxValue, 2),
                 ]
             ]
         ];

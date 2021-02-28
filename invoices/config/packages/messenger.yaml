@@ -14,9 +14,8 @@ framework:
                    queues:
                      invoices: ~
             # failed: 'doctrine://default?queue_name=failed'
-             sync: 'sync://'
+#             sync: 'sync://'
 
         routing:
             # Route your messages to the transports
-#             'App\Message\InvoiceGeneratorMessage': async
-             'App\Message\InvoiceGeneratorMessage': sync
+             'App\Message\InvoiceGeneratorMessage': async

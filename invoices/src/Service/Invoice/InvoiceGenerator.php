@@ -2,6 +2,7 @@
 
 namespace App\Service\Invoice;
 
+use App\Service\Invoice\Exception\InvoiceNumberException;
 use League\Flysystem\Filesystem;
 
 class InvoiceGenerator
@@ -26,11 +27,17 @@ class InvoiceGenerator
 
     private function generateInvoiceNumber(\DateTimeImmutable $invoiceDate, int $orderNumber): string
     {
-        return sprintf(
+        $invoiceNumber = sprintf(
             'SH%s-%s',
             $invoiceDate->format('ymd'),
             str_pad((string)$orderNumber, 6, '0', STR_PAD_LEFT)
         );
+
+        if (!$this->isUniqeNumber()) {
+            throw InvoiceNumberException::createNonUniqueInvoiceNumber($invoiceNumber);
+        }
+
+        return $invoiceNumber;
     }
 
     private function saveFile(InvoiceDTO $invoiceDTO): string
@@ -41,6 +48,12 @@ class InvoiceGenerator
         $this->publicUploadsFilesystem->write($fileName, $content);
 
         return $fileName;
+    }
+
+    private function isUniqeNumber(): bool
+    {
+        //check in database
+        return true;
     }
 
 }
