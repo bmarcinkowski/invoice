@@ -63,7 +63,7 @@ class InvoiceDTO implements \JsonSerializable
         return $this;
     }
 
-    public function getInvoiceDate(): DateTimeImmutable
+    public function getIssueDate(): DateTimeImmutable
     {
         return $this->invoiceDate;
     }

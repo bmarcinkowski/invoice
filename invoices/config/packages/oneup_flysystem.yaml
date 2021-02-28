@@ -2,8 +2,13 @@
 oneup_flysystem:
     adapters:
         default_adapter:
-            local:
-                location: '%kernel.project_dir%/databucket'
+            awss3v3:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(AWS_S3_BUCKET_NAME)%'
+                prefix: 'summary/'
+                options:
+                    ACL: 'public'
+
     filesystems:
         default_filesystem:
             adapter: default_adapter
