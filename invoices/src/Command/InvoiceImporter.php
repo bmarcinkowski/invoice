@@ -30,9 +30,6 @@ class InvoiceImporter extends Command
 
     private MessageBusInterface $messageBus;
     private LoggerInterface $logger;
-    /**
-     * @var Filesystem
-     */
     private Filesystem $publicUploadsFilesystem;
 
     public function __construct(MessageBusInterface $messageBus, Filesystem $publicUploadsFilesystem, LoggerInterface $logger)
@@ -76,10 +73,6 @@ class InvoiceImporter extends Command
         return $invoices;
     }
 
-    /**
-     * @param array $invoices
-     * @throws \Exception
-     */
     protected function exportInvoices(array $invoices): void
     {
         foreach ($invoices as $invoice) {

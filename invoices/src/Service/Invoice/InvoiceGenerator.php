@@ -8,9 +8,6 @@ use League\Flysystem\Visibility;
 
 class InvoiceGenerator
 {
-    /**
-     * @var Filesystem
-     */
     private Filesystem $publicUploadsFilesystem;
     private string $filePath;
     private string $fileStorageBaseUrl;

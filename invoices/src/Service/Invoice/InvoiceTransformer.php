@@ -2,6 +2,8 @@
 
 namespace App\Service\Invoice;
 
+use DateTimeImmutable;
+
 class InvoiceTransformer
 {
     public static function generateDTO(array $invoice): InvoiceDTO
@@ -11,7 +13,7 @@ class InvoiceTransformer
 
         return new InvoiceDTO(
             $invoice['order_number'],
-            new \DateTimeImmutable($invoice['invoice_date']),
+            new DateTimeImmutable($invoice['invoice_date']),
             $invoice['receiver_name'],
             $invoice['receiver_address'],
             $invoice['receiver_email'],
