@@ -19,7 +19,7 @@ class InvoiceGenerator
 
     public function generate(InvoiceDTO $invoiceDTO): string
     {
-        $invoiceNumber = $this->generateInvoiceNumber($invoiceDTO->getInvoiceDate(), $invoiceDTO->getOrderNumber());
+        $invoiceNumber = $this->generateInvoiceNumber($invoiceDTO->getIssueDate(), $invoiceDTO->getOrderNumber());
         $invoiceDTO->setInvoiceNumber($invoiceNumber);
 
         return $this->saveFile($invoiceDTO, $invoiceNumber);
